@@ -1,0 +1,39 @@
+#MTA4MTA3OTYzMDYzMjU4NzMwNA.GXY-RO.1TE3a_pqwexb3qjK0VwIh-GDp98dLMW8fMXNL8
+import discord, asyncio, os 
+from discord.ext.commands import Bot
+from discord.ext import commands
+from datetime import datetime, timedelta
+import random
+import re
+#git check
+TOKEN = 'MTA4MTA3OTYzMDYzMjU4NzMwNA.GXY-RO.1TE3a_pqwexb3qjK0VwIh-GDp98dLMW8fMXNL8'
+
+intents = discord.Intents.all()
+game = discord.Game("Let's help")
+
+bot = commands.Bot(command_prefix='?', status=discord.Status.online, activity=game, intents=intents)
+
+@bot.command()
+async def bye(ctx):
+    await ctx.send(f'{ctx.author.mention}, See you again')
+
+#testing if this logic works
+@bot.listen('on_message')
+async def studytimer(message):
+    #channel = ctx.channel
+    if message.content.startswith("studytimer"):
+        await message.channel.send('Please write how many minutes you want to set the timer. (In minutes!!)')
+        mins = message.content
+        mins=int(mins)
+        # if type(mins)!=int:
+        #     await message.channel.send('Wrong format. Type in numbers. e.g. ?studytimer 45')
+        #     return 
+        now=datetime.datetime.now()
+        then=now+timedelta(seconds=mins)
+        await message.send("Yout timeer is set to {then}")
+        wait_time=(then-now).total_seconds()
+        await asyncio.sleep(wait_time)
+
+        await message.send("Time is over!!!")
+
+bot.run(TOKEN)
