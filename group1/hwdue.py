@@ -142,6 +142,10 @@ async def quiz(message):
 
 @client.listen('on_message')
 async def weather(message):
+    # 3/31: this wather command did not function till Friday
+    # We will ask the TA on how to fix this issue
+    # We are currently struggling with implementing any API
+
     # Check if the message starts with the weather command
     if message.content.startswith('weather'):
         # Make a GET request to the OpenWeatherMap API
@@ -154,6 +158,11 @@ async def weather(message):
         #await message.channel.send(f'The temperature in Chmapaign is {temperature} degrees Celsius.')
 
         # this is for testing purposes
+
+# We are planning on adding other API after this weather functionality
+# we are planning on improving the quiz function using an API and I am still searching for tools to impliment this
+
+
 
 @client.event
 async def on_ready():
