@@ -6,6 +6,7 @@ from collections import OrderedDict
 import time
 import requests
 import random
+import youtube_dl
 
 
 api_key = 'aac486d22a195ee88dc4698525927457'
@@ -142,27 +143,44 @@ async def quiz(message):
 
 @client.listen('on_message')
 async def weather(message):
-    # 3/31: this wather command did not function till Friday
-    # We will ask the TA on how to fix this issue
-    # We are currently struggling with implementing any API
-
-    # Check if the message starts with the weather command
     if message.content.startswith('weather'):
-        # Make a GET request to the OpenWeatherMap API
         response = requests.get(f'https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}')
-        print(response.json())
-        # Extract the temperature from the JSON response
-        #temperature = response.json()['main']['temp']
+        # print(response.json())
+        temperature = response.json()['main']['temp']
+        
+        # weather_des = response.json()['weather']['description']
+        # wind = response.json()['wind']['speed']
+ 
+        await message.channel.send(f'Today, it is {round((temperature - 273.15) * 5/9 + 32, 1)} degrees fahrenheit, {round(temperature - 273.15, 1)} in Celcius')
+        # await message.channel.send('Weather: ' + weather_des + '/ Wind speed: ' + wind + 'm/s')
 
-        # Send a message to the Discord channel with the temperature
-        #await message.channel.send(f'The temperature in Chmapaign is {temperature} degrees Celsius.')
+# @client.listen('on_message')
+# async def weather(message):
+#     if message.content.startswith('call_quiz'):
+#         quiz = requests.get('https://opentdb.com/api.php?amount=10')
+#         data = await quiz.json()
+#         message.channel.send(data.results[random(data.results.length)])
 
-        # this is for testing purposes
+@client.listen('on_message')
+async def play(message):
+    if message.content.startswith('play'):
+        # Get the URL of the YouTube video
+        url = message.content.split(' ')[1]
 
-# We are planning on adding other API after this weather functionality
-# we are planning on improving the quiz function using an API and I am still searching for tools to impliment this
+        # Download the audio from the YouTube video
+        ydl_opts = {'format': 'bestaudio/best', 'noplaylist': 'True'}
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=False)
+            url = info['formats'][0]['url']
 
+        # Connect to the voice channel of the user who sent the message
+        if message.author.voice:
+            channel = message.author.voice.channel
+            voice_client = await channel.connect()
 
+            # Play the audio in the voice channel
+            voice_client.play(discord.FFmpegPCMAudio(url))
+            await message.channel.send('Playing audio from ' + url)
 
 @client.event
 async def on_ready():
