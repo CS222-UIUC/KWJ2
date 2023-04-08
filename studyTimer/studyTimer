@@ -17,23 +17,50 @@ bot = commands.Bot(command_prefix='?', status=discord.Status.online, activity=ga
 async def bye(ctx):
     await ctx.send(f'{ctx.author.mention}, See you again')
 
+
+#todo_list={}
+#save the name of task and due date into todo_list
+#type: ?todo task/YYYY-MM-DD HH:MM
+# @bot.listen('on_message')
+# async def todosave(ctx):
+#     if ctx.content.startswith("todo"):
+#         parts = ctx.content.split('/', maxsplit=1)
+#         task = parts[0].split(' ', maxsplit=1)[1]
+#         due = parts[1].strip() if len(parts) > 1 else ""
+#         print(task)
+#         print(due)
+#         if not re.match(r"\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}", due):
+#             await ctx.channel.send('Wrong format. Type in ?todo task/`YYYY-MM-DD HH:MM`')
+#             return
+#         todo_list[task] = due
+#         await ctx.channel.send(f"You have {task} due to {due}.")
+
 #testing if this logic works
 @bot.listen('on_message')
 async def studytimer(message):
     #channel = ctx.channel
     if message.content.startswith("studytimer"):
-        await message.channel.send('Please write how many minutes you want to set the timer. (In minutes!!)')
-        mins = message.content
+        #await message.channel.send('Please write how many minutes you want to set the timer. (In minutes!!)')
+        #mins = message.content
+        parts = message.content.split(':', maxsplit=1)
+        mins = parts[0].split(' ', maxsplit=1)[1]
+        secs = parts[1].strip() if len(parts) > 1 else ""
+        print(type(mins))
+        print(type(secs))
         mins=int(mins)
+        secs=int(secs)
+
         # if type(mins)!=int:
         #     await message.channel.send('Wrong format. Type in numbers. e.g. ?studytimer 45')
         #     return 
-        now=datetime.datetime.now()
-        then=now+timedelta(seconds=mins)
-        await message.send("Yout timeer is set to {then}")
-        wait_time=(then-now).total_seconds()
-        await asyncio.sleep(wait_time)
+        # now=datetime.datetime.now()
+        # then=int(now.minutes+(timedelta(hours=0, minutes=mins, seconds=0)/timedelta(minutes=1)))
+        # then=now+timedelta(seconds=mins)
+        # await message.send("Yout timeer is set to {then}")
+        # wait_time=(then-now).total_seconds()
+        mins=mins*60
+        await asyncio.sleep(mins+secs)
 
-        await message.send("Time is over!!!")
+        await message.channel.send("Time is over!!!")
 
 bot.run(TOKEN)
