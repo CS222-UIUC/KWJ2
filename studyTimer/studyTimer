@@ -22,18 +22,27 @@ async def bye(ctx):
 async def studytimer(message):
     #channel = ctx.channel
     if message.content.startswith("studytimer"):
-        await message.channel.send('Please write how many minutes you want to set the timer. (In minutes!!)')
-        mins = message.content
+        #await message.channel.send('Please write how many minutes you want to set the timer. (In minutes!!)')
+        #mins = message.content
+        parts = message.content.split(':', maxsplit=1)
+        mins = parts[0].split(' ', maxsplit=1)[1]
+        secs = parts[1].strip() if len(parts) > 1 else ""
+        print(type(mins))
+        print(type(secs))
         mins=int(mins)
+        secs=int(secs)
+
         # if type(mins)!=int:
         #     await message.channel.send('Wrong format. Type in numbers. e.g. ?studytimer 45')
         #     return 
-        now=datetime.datetime.now()
-        then=now+timedelta(seconds=mins)
-        await message.send("Yout timeer is set to {then}")
-        wait_time=(then-now).total_seconds()
-        await asyncio.sleep(wait_time)
+        # now=datetime.datetime.now()
+        # then=int(now.minutes+(timedelta(hours=0, minutes=mins, seconds=0)/timedelta(minutes=1)))
+        # then=now+timedelta(seconds=mins)
+        # await message.send("Yout timeer is set to {then}")
+        # wait_time=(then-now).total_seconds()
+        mins=mins*60
+        await asyncio.sleep(mins+secs)
 
-        await message.send("Time is over!!!")
+        await message.channel.send("Time is over!!!")
 
 bot.run(TOKEN)
