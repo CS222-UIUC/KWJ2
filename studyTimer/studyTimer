@@ -27,8 +27,7 @@ async def studytimer(message):
         parts = message.content.split(':', maxsplit=1)
         mins = parts[0].split(' ', maxsplit=1)[1]
         secs = parts[1].strip() if len(parts) > 1 else ""
-        print(type(mins))
-        print(type(secs))
+        await message.channel.send(f"Your timer is set to {mins}minutes {secs}seconds from now!")
         mins=int(mins)
         secs=int(secs)
 
