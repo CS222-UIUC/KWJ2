@@ -12,14 +12,61 @@ game = discord.Game("Studying")
 intents = discord.Intents.all()
 client = commands.Bot(command_prefix='!',status = discord.Status.online, activity = game, intents = intents)
 vocab = {}
-
-
+players={}
+ytdl_format_options = {
+    'format': 'bestaudio/best',
+    'restrictfilenames': True,
+    'noplaylist': True,
+    'ignoreerrors': False,
+    'logtostderr': False,
+    'quiet': True,
+    'no_warnings': True,
+    'default_search': 'auto',
+    'source_address': '0.0.0.0'
+}
+ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
+class YTDLSource(discord.PCMVolumeTransformer):
+    def __init__(self, source, *, data, volume = 0.5):
+        super().__init__(source,volume)
+        self.data=data
+        self.title=data.get('title')
+        self.url=''
+    @classmethod
+    async def from_url(cls, url, *, loop = None, stream = False):
+        loop=loop or asyncio.get_event_loop()
+        data= await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download= not stream))
+        if 'entries' in data:
+            data = data['entries'][0]
+        filename = data['title'] if  stream else ytdl.prepare_filename(data)
+        return filename
 @client.command()
 async def hi(ctx):
     await ctx.send("Hello, I am HWdue bot")
 @client.command()
 async def bye(ctx):
     await ctx.send("See you")
+@client.command(pass_context=True)
+async def join(ctx):
+    channel=ctx.message.author.voice.channel
+    await channel.connect()
+@client.command(pass_context=True)
+async def leave(ctx):
+    voice_client=ctx.message.guild.voice_client
+    await voice_client.disconnect()
+@client.command(pass_context=True)
+async def play(ctx, url):
+    server = ctx.message.guild
+    voice_channel = server.voice_client
+    if voice_channel is None:
+        voice_channel = await ctx.author.voice.channel.connect()
+    try:
+        async with ctx.typing():
+            filename = await YTDLSource.from_url(url, loop=client.loop)
+            voice_channel.play(discord.FFmpegPCMAudio(executable="/usr/local/bin/ffmpeg", source=filename))
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
 @client.listen('on_message')
 async def hw_save(message):
     if message.content.startswith("savehw"):
@@ -148,41 +195,8 @@ async def quiz(message):
 #trying to play youtube link
 #succeed to make bot join voice chat
 #but not playing anything yet
-@client.listen('on_message')
-async def play_music(message):
-    if message.author == client.user:
-        return
-    if message.content.startswith("https://www.youtube.com/watch"):
-        #print("????")
-        url = message.content
-        voice_channel = message.author.voice.channel
-        voice_client = await voice_channel.connect()
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }],
-            'postprocessor_args': [
-                '-ar', '16000'
-            ],
-            'prefer_ffmpeg': True,
-            'keepvideo': False,
-            'outtmpl': 'downloads/%(title)s.%(ext)s',
-            'noplaylist': True
-        }
-        print("check1")
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            info_dict = ydl.extract_info(url, download=False)
-            url2 = info_dict['formats'][0]['url']
-        print("check2")
-        voice_client.play(discord.FFmpegPCMAudio(url2))
-        await message.channel.send(f'Playing {info_dict["title"]}')
-        while voice_client.is_playing():
-            await asyncio.sleep(1)
-        await voice_client.disconnect()
-    await client.process_commands(message)
+
+
 @client.event
 async def on_ready():
     print("You can now use your bot")
