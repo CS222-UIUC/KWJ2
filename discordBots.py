@@ -13,6 +13,7 @@ import time
 import random
 import requests
 import youtube_dl
+import math
 TOKEN = 'MTA4MTA3OTYzMDYzMjU4NzMwNA.GXY-RO.1TE3a_pqwexb3qjK0VwIh-GDp98dLMW8fMXNL8'
 
 intents = discord.Intents.all()
@@ -353,6 +354,110 @@ async def weather(message):
         # await message.channel.send('Weather: ' + weather_des + '/ Wind speed: ' + wind + 'm/s')
 #////////////////////////////////////////////////////////////////////////////////////////////
 #weather
+
+
+
+#calculator
+#///////////////////////////////////////////////////////////////////////////////////////////
+
+@bot.listen('on_message')
+async def calculator(message):
+    #channel = ctx.channel
+    if message.content.startswith("math"):
+        parts = message.content.split()
+        print(parts)
+        first = parts[1].strip() if len(parts) > 1 else ""
+        operator = parts[2].strip() if len(parts) > 2 else ""
+        second = parts[3].strip() if len(parts) > 3 else ""
+
+        first=int(first)
+        second=int(second)
+
+        if operator=='+':
+            await message.channel.send(first+second)
+        elif operator=='-':
+            await message.channel.send(first-second)
+        elif operator=='*':
+            await message.channel.send(first*second)
+        elif operator=='/':
+            await message.channel.send(first/second)
+        elif operator=='^' or operator=='**':
+            await message.channel.send(first**second)
+        elif operator=='%':
+            await message.channel.send(first%second)
+        else:
+            await message.channel.send("You can only use +,-,*,/,^,%. Please try again with format math 1 + 2")
+
+    elif message.content.startswith("trig"):
+        parts = message.content.split()
+        print(parts)
+        operator = parts[1].strip() if len(parts) > 1 else ""
+        num = parts[2].strip() if len(parts) > 2 else ""
+        num=float(num)
+        if operator=='sin':
+            await message.channel.send(math.sin(num))
+        elif operator=='cos':
+            await message.channel.send(math.cos(num))
+        elif operator=='tan':
+            await message.channel.send(math.tan(num))
+        else:
+            await message.channel.send("You can only use cos, sin, tan. Please try again with format trig cos 3.14")
+#//////////////////////////////////////////////////////////////////////////////////////////
+#calculator
+
+#youtube
+#/////////////////////////////////////////////////////////////////////////////////////////////////////
+ytdl_format_options = {
+    'format': 'bestaudio/best',
+    'restrictfilenames': True,
+    'noplaylist': True,
+    'ignoreerrors': False,
+    'logtostderr': False,
+    'quiet': True,
+    'no_warnings': True,
+    'default_search': 'auto',
+    'source_address': '0.0.0.0'
+}
+ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
+class YTDLSource(discord.PCMVolumeTransformer):
+    def __init__(self, source, *, data, volume = 0.5):
+        super().__init__(source,volume)
+        self.data=data
+        self.title=data.get('title')
+        self.url=''
+    @classmethod
+    async def from_url(cls, url, *, loop = None, stream = False):
+        loop=loop or asyncio.get_event_loop()
+        data= await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download= not stream))
+        if 'entries' in data:
+            data = data['entries'][0]
+        filename = data['title'] if  stream else ytdl.prepare_filename(data)
+        return filename
+
+@bot.command(pass_context=True)
+async def join(ctx):
+    channel=ctx.message.author.voice.channel
+    await channel.connect()
+@bot.command(pass_context=True)
+async def leave(ctx):
+    voice_client=ctx.message.guild.voice_client
+    await voice_client.disconnect()
+@bot.command(pass_context=True)
+async def play(ctx, url):
+    server = ctx.message.guild
+    voice_channel = server.voice_client
+    if voice_channel is None:
+        voice_channel = await ctx.author.voice.channel.connect()
+    try:
+        async with ctx.typing():
+            filename = await YTDLSource.from_url(url, loop=bot.loop)
+            voice_channel.play(discord.FFmpegPCMAudio(executable="/usr/local/bin/ffmpeg", source=filename))
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    
+
+#////////////////////////////////////////////////////////////////////////////////////////
+#youtube
 
 
 @bot.event
