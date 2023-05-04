@@ -37,3 +37,14 @@ Clone repository from github.
 Execute python file.
 
 Use the functions of bot in the Discord app.
+
+##Roles:
+
+Dahyun Lim (dahyunl2): Developed Exam Reminder, Study Timer, To-do list, Calculator bots.
+
+Supia Park (spark336): Developed Exam Reminder, Study Timer, To-do list, Calculator bots.
+
+Heejun Yun (heejun2): Developed Homework Due, Stopwatch, Quiz, Weather, Youtube bots.
+
+Minjae Kim (minjaek3): Developed Homework Due, Stopwatch, Quiz, Weather, Youtube bots.
+
