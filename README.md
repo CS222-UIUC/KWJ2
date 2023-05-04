@@ -27,6 +27,13 @@ Discord could be used to help academic success.
 
 Wanted to help others strengthen their motivation to study.
 
+## Architecture:
+
+We use discord app as frontend. 
+
+For the backend development, we used python and discord, openweather, youtube api to make requests
+According to the function used in our server, it determines which request needs to be sent to outer sources.
+When the applicable data is received, the bot converts it into a form of text or auido to display it to the user.
 
 ## Installation Instructions:
 
