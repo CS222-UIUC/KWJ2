@@ -1,8 +1,6 @@
-# KWJ2
-Study Helper Discord Bot
+# Study Helper Discord Bot
 
-
-Functionality:
+## Functionality:
 
 Exam reminder: Remind students of the test information an hour before the exam.
 
@@ -23,14 +21,14 @@ Calculator: Has functions to calculate using operation +,-,*,/,^,%,sin,cos, and 
 Youtube: If playing a youtube video directly distracts users, they can only hear the audio through discord voice chat.
 
 
-Motivation:
+## Motivation:
 
 Discord could be used to help academic success.
 
 Wanted to help others strengthen their motivation to study.
 
 
-Installation Instructions:
+## Installation Instructions:
 
 Install discord.py, youtube.dl, ffmpeg in pip.
 
