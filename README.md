@@ -38,7 +38,7 @@ Execute python file.
 
 Use the functions of bot in the Discord app.
 
-##Roles:
+## Roles:
 
 Dahyun Lim (dahyunl2): Developed Exam Reminder, Study Timer, To-do list, Calculator bots.
 
